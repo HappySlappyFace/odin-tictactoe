@@ -14,17 +14,22 @@ const gameboard =(() => {
     // };
 
     const setSquare = (index, value) => {
-        if (_verifySquare(index)){
+        if (_verifySquare(index)&&gameStatus){
             board[index] = value;
             if (_verifyWin() === "X"){
+                gameStatus=false;
                 player1.incrementScore();
                 console.log("X wins");
             }
             if (_verifyWin() === "O"){
+                gameStatus=false;
                 player2.incrementScore();
                 console.log("O wins");
             }
 
+        }
+        else if(gameStatus===false){
+            console.log("Game over");
         }
         else{
             console.log("Square already taken");
@@ -40,6 +45,7 @@ const gameboard =(() => {
             // gameboard.setSquare(e.target.setAttribute("data-index"), "");
         });
         displayController.drawSquares();
+        gameStatus=true;
     };
 
     const _verifyWin = () => {
@@ -163,6 +169,7 @@ const startButton = document.querySelector("#start");
 const form = document.querySelector("#form");
 var player1;
 var player2;
+var gameStatus=true;
 form.addEventListener("submit", (e)=> {
     let readyToStart = true;
     if (document.querySelector("#Player1").value === ""){
@@ -179,5 +186,5 @@ form.addEventListener("submit", (e)=> {
         startGame();
     }
 });
-DEBUG=true;
+DEBUG=false;
 
