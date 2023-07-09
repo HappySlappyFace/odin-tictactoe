@@ -17,9 +17,11 @@ const gameboard =(() => {
         if (_verifySquare(index)){
             board[index] = value;
             if (_verifyWin() === "X"){
+                player1.incrementScore();
                 console.log("X wins");
             }
             if (_verifyWin() === "O"){
+                player2.incrementScore();
                 console.log("O wins");
             }
 
@@ -41,50 +43,44 @@ const gameboard =(() => {
     };
 
     const _verifyWin = () => {
-        for(let i=0; i<3; i++){
-            for(let j=0; j<3; j++){
-                let res=0;
-                if (board[i*3+j] === "X"){
-                    res++;
-                }
-                else if (board[i*3+j] === "O"){
-                    res--;
-                }
-                if (res === 3){
-                    return "X";
-                }
-                else if (res === -3){
-                    return "O";
-                }
-            }
+        if (board[0] === board[1] && board[1] === board[2] && board[0] !== ""){
+            return board[0];
+        }
+        if (board[3] === board[4] && board[4] === board[5] && board[3] !== ""){
+            return board[3];
+        }
+        if (board[6] === board[7] && board[7] === board[8] && board[6] !== ""){
+            return board[6];
+        }
+        if (board[0] === board[3] && board[3] === board[6] && board[0] !== ""){
+            return board[0];
+        }
+        if (board[1] === board[4] && board[4] === board[7] && board[1] !== ""){
+            return board[1];
+        }
+        if (board[2] === board[5] && board[5] === board[8] && board[2] !== ""){
+            return board[1];
+        }
+        if (board[0] === board[4] && board[4] === board[8] && board[0] !== ""){
+            return board[0];
+        }
+        if (board[2] === board[4] && board[4] === board[6] && board[2] !== ""){
+            return board[2];
+        }
+        return false;
 
-        }
-        for(let i=0; i<3; i++){
-            for(let j=0; j<3; j++){
-                let res=0;
-                if (board[j*3+i] === "X"){
-                    res++;
-                }
-                else if (board[j*3+i] === "O"){
-                    res--;
-                }
-                if (res === 3){
-                    return "X";
-                }
-                else if (res === -3){
-                    return "O";
-                }
-            }
-        }
-        let res=0;
+        
     };
     return {board, setSquare, resetBoard};
 })();
 
 const playerData = (name, symbol)=>{
+    let score = 0;
     const getName = () => name
     const getSymbol = () => symbol
-    return {getName, getSymbol}
+    const getScore = () => score
+    const incrementScore = () => score++
+    return {getName, getSymbol, getScore, incrementScore}
 }
 const currentPlayer = (() => {
     let _currentPlayer = 0;
@@ -108,7 +104,12 @@ const displayController =(()=>{
             square.textContent = gameboard.board[index];
         })
     };
-
+    const updatePlayers = () => {
+        const _players = document.querySelectorAll(".player");
+        _players.forEach((player, index) => {
+            player.textContent = playerData.getName();
+        })
+    };
     return {drawSquares};
 })();
 
@@ -128,8 +129,8 @@ function drawSquares(){
 };
 
 function drawPlayers(){
-    const player1 = playerData(document.querySelector("#Player1").value, "X");
-    const player2 = playerData(document.querySelector("#Player2").value, "O");
+    player1 = playerData(document.querySelector("#Player1").value, "X");
+    player2 = playerData(document.querySelector("#Player2").value, "O");
     console.log(player1.getName());
     const players = document.querySelector("#players");
     const player1Div = document.createElement("div");
@@ -153,12 +154,15 @@ function startGame(){
         console.log("bruh")
         displayController.drawSquares();
     }
+    
     );
-
+    resetButton.style.display = "block";
 
 }
 const startButton = document.querySelector("#start");
 const form = document.querySelector("#form");
+var player1;
+var player2;
 form.addEventListener("submit", (e)=> {
     let readyToStart = true;
     if (document.querySelector("#Player1").value === ""){
